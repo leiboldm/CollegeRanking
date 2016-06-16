@@ -34,8 +34,44 @@ def main():
                 'PercentUndergradOutOfState', 'PercentUndergradForeign', 'PercentWomen',
                 'PercentUndergrad18-24', 'StudentToFacultyRatio', 'Enrollment', 
                 'FulltimeUndergradEnrollment']
+
+    output_headers = ['Rank', 'University Name', 'Score', 'Admission %', 'Matriculation %',
+                    'SAT (75%)', 'SAT (25%)', 'Graduation % (6 year)', 'Retention %',
+                    'Tuition ($)', 'Budget per Student ($)', 'Average Professor Salary ($)',
+                    '% of Undergrad from out of state', '% of Undergrad foreign',
+                    '% women', '% of Undergrad 18-24 years old',
+                    'Student to Faculty Ratio', 'Total Enrollment', 
+                    'Fulltime Undergrad Enrollment']
+
+    # a list of the columns to output to a csv file in a tuple with the
+    # column's display formatting
+    columns_headers = [
+        ('rank', 'Rank'), 
+        ('name', 'University Name'), 
+        ('score', 'Score'), 
+        ('AdmissionRate', 'Admission %'), 
+        ('MatriculationRate', 'Matriculation %'), 
+        ('SAT75Equiv', 'SAT (75%)'), 
+        ('SAT25Equiv', 'SAT (25%)'), 
+        ('GraduationRate', 'Graduation % (6 year)'), 
+        ('RetentionRate', 'Retention %'), 
+        ('Tuition', 'Tuition ($)'), 
+        ('ExpensesPerStudent', 'Budget per Student ($)'), 
+        ('ProfessorSalary', 'Average Professor Salary ($)'), 
+        ('PercentUndergradOutOfState', '% of Undergrad from out of state'), 
+        ('PercentUndergradForeign', '% of Undergrad foreign'), 
+        ('PercentWomen', '% women'), 
+        ('PercentUndergrad18-24', '% of Undergrad 18-24 years old'), 
+        ('StudentToFacultyRatio', 'Student to Faculty Ratio'), 
+        ('Enrollment', 'Total Enrollment'), 
+        ('FulltimeUndergradEnrollment', 'Fulltime Undergrad Enrollment')]
+
+    columns = [x[0] for x in columns_headers]
+    output_headers = [x[1] for x in columns_headers]
+    top_colleges = top_colleges[columns]
+    top_colleges.columns = output_headers
     with open("top_colleges.csv", "w") as f:
-        top_colleges.to_csv(f, columns=columns, index=False, float_format="%.1f") 
+        top_colleges.to_csv(f, columns=output_headers, index=False, float_format="%.1f") 
 
 def normalizeScore(row, max_score):
     return row['score'] * 100 / max_score
@@ -95,7 +131,7 @@ def createSATEquiv(row, percentile):
     if avgSAT == 0:
         # if the school doesn't report data, assume it has a terrible average SAT
         avgSAT = 1100
-    return avgSAT
+    return int(avgSAT)
 
 def createScore(row):
     score = (row['ExpensesPerStudent']
