@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>National University Ranking</title>
+        <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.3.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" src="csv2table.js"></script>
+        <link href="jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <h1>MattLeibold.com National University Ranking</h1>
+        <h4>A comprehensive ranking of all 4 year, degree-granting universities in the US.
+            Based on many factors including the cost of tuition, quality of instruction,
+            acceptance rate, graduation rate, and more.
+        </h4>
+        <table id="myTable">
+        </table>
+        <script>
+            $(document).ready(function() {
+                csv2table("top_colleges.csv", $("#myTable"), function() {
+                    $("#myTable").DataTable();
+                });
+            });
+        </script>
+    </body>
+</html>

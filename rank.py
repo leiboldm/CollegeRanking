@@ -1,5 +1,4 @@
 import pandas
-import code
 
 def main():
     coll_df = pandas.read_csv("collegeDataV2.csv")
@@ -12,88 +11,90 @@ def main():
     fillNulls(coll_df, "RetentionRate")
     fillNulls(coll_df, "Tuition", defaultValue=0) # military academies are free
     fillNulls(coll_df, "Endowment")
+    coll_df['ExpensesPerStudent'] = coll_df.apply(lambda row: createExpensesPerStudent(row), axis=1)
+    coll_df['MatriculationRate'] = coll_df.apply(lambda row: createMatriculationRate(row), axis=1)
+    coll_df['AdmissionRate'] = coll_df.apply(lambda row: createAdmissionRate(row), axis=1)
+    coll_df['SAT75Equiv'] = coll_df.apply(lambda row: createSATEquiv(row, '75'), axis=1)
+    coll_df['SAT25Equiv'] = coll_df.apply(lambda row: createSATEquiv(row, '25'), axis=1)
     coll_df['score'] = coll_df.apply(lambda row: createScore(row), axis=1)
 
     top_colleges = coll_df.sort('score', ascending=False)
-    rank = 1
-    for i, row in top_colleges[:25][['name', 'score']].iterrows():
-        print "{} {} {:.2f}".format(str(rank).ljust(2), row['name'].ljust(50), row['score'])
-        rank += 1
-    code.interact(local=locals())
-    
+    top_colleges['rank'] = range(1, top_colleges.shape[0] + 1)
 
+    for i, row in top_colleges[:50][['rank', 'name', 'score']].iterrows():
+        print "{} {} {:.2f}".format(str(row['rank']).ljust(2),
+                                     row['name'].ljust(50), row['score'])
+
+    columns = ['rank', 'name', 'score', 'AdmissionRate', 'MatriculationRate', 
+                'SAT75Equiv', 'SAT25Equiv',
+                'GraduationRate', 'RetentionRate', 'Tuition', 
+                'ExpensesPerStudent', 'ProfessorSalary',
+                'PercentUndergradOutOfState', 'PercentUndergradForeign', 'PercentWomen',
+                'PercentUndergrad18-24', 'StudentToFacultyRatio', 'Enrollment', 
+                'FulltimeUndergradEnrollment']
+    with open("top_colleges.csv", "w") as f:
+        top_colleges.to_csv(f, columns=columns, index=False, float_format="%.1f") 
+    
 def fillNulls(df, key, defaultValue=None):
     if defaultValue == None: 
         defaultValue = df[key].mean()
     df[key].fillna(defaultValue, inplace=True)
 
-def createScore(row):
-    expensesPerStudent = row['TotalExpenses'] / row['Enrollment']
+def createExpensesPerStudent(row):
+    return row['TotalExpenses'] / row['Enrollment'] 
 
-    # calculate admission rate
+# calculate admission rate
+def createAdmissionRate(row):
     if row['ApplicantsTotal'] > 0:
-        admissionRate = row['AdmissionsTotal'] / row['ApplicantsTotal']
+        return (row['AdmissionsTotal'] / row['ApplicantsTotal']) * 100
     else:
-        admissionRate = 1
-    if admissionRate > 1:
-        raise Exception("admission rate invalid for {} {}".format(row['name'], admissionRate))
+        return 100
 
-    # calculate matriculation rate
+# calculate matriculation rate
+def createMatriculationRate(row):
     if row['AdmissionsTotal'] > 0:
-        matriculationRate = row['EnrolledTotal'] / row['AdmissionsTotal']
+        return (row['EnrolledTotal'] / row['AdmissionsTotal']) * 100
     else:
-        matriculationRate = 0
-    if matriculationRate > 1:
-        raise Exception("matriculation rate invalid for {} {}".format(row['name'], matriculationRate))
+        return 0
 
-    # calculate 75% average SAT/SAT equivalent
-    act75 = 0
-    sat75 = row['SATReading75'] + row['SATMath75'] + row['SATWriting75']
-    dividend = 0
-    if isNaN(sat75):
-        sat75 = 0
+# Take SAT and ACT data for the percentile (either '25' or '75')
+# and create a 2400 SAT score by adding up all the SAT subjects
+# and by converting ACT scores to SAT scores, create SAT equivalent by
+# averageing the two scores weighting by the percent of students submitting each test
+def createSATEquiv(row, percentile): 
+    act = 0
+    sat = row['SATReading' + percentile] + row['SATMath' + percentile]\
+          + row['SATWriting' + percentile]
+    divisor = 0
+    if isNaN(sat):
+        sat = 0
     else:
-        dividend = row['PercentSubmittingSAT']
-    if not isNaN(row['ACT75']):
-        act75 = ACTtoSAT(row['ACT75'])
-        dividend += row['PercentSubmittingACT']
-    if dividend == 0:
-        dividend = 1
-    avgSAT75 = (sat75 * row['PercentSubmittingSAT'] +
-                act75 * row['PercentSubmittingACT']) / dividend
+        divisor = row['PercentSubmittingSAT']
+    if not isNaN(row['ACT' + percentile]):
+        act = ACTtoSAT(row['ACT' + percentile])
+        divisor += row['PercentSubmittingACT']
+    if divisor == 0:
+        divisor = 1
+    avgSAT = (sat * row['PercentSubmittingSAT'] +
+                act * row['PercentSubmittingACT']) / divisor
+    return avgSAT
 
-    # calculate 25% average SAT/SAT equivalent
-    act25 = 0
-    sat25 = row['SATReading25'] + row['SATMath25'] + row['SATWriting25']
-    dividend = 0
-    if isNaN(sat25):
-        sat25 = 0
-    else:
-        dividend = row['PercentSubmittingSAT']
-    if not isNaN(row['ACT25']):
-        act25 = ACTtoSAT(row['ACT25'])
-        dividend += row['PercentSubmittingACT']
-    if dividend == 0:
-        dividend = 1
-    avgSAT25 = (sat25 * row['PercentSubmittingSAT'] + 
-                act25 * row['PercentSubmittingACT']) / dividend
-
-    SAT = (avgSAT25 + avgSAT75) / 2
-   
-    score = (expensesPerStudent / 100
-            + (100 / admissionRate)
-            + (matriculationRate * 100)
-            + (SAT * 1)
-            + ((50000 - row['Tuition']) / 100)
-            + (100 / row['StudentToFacultyRatio'])
-            + ((row['PercentUndergradOutOfState'] + row['PercentUndergradForeign']))
-            + (row['PercentUndergrad18-24']) # prioritize youthful schools
-            + (50 - abs(50 - row['PercentWomen'])) # prioritize equal gender ratio
-            + (row['GraduationRate'])
-            + (row['RetentionRate'])
-            + (row['ProfessorSalary'] / 10000)
+def createScore(row):
+    score = (row['ExpensesPerStudent']
+            + (100000 / row['AdmissionRate'])
+            + (row['MatriculationRate'] * 250)
+            + (row['SAT25Equiv'] * 50)
+            + (row['SAT75Equiv'] * 50)
+            - row['Tuition']
+            + (10000 / row['StudentToFacultyRatio'])
+            + (500 * (row['PercentUndergradOutOfState'] + row['PercentUndergradForeign']))
+            + (500 * row['PercentUndergrad18-24']) # prioritize youthful schools
+            + (1000 * (50 - abs(50 - row['PercentWomen']))) # prioritize equal gender ratio
+            + (200 * row['GraduationRate'])
+            + (200 * row['RetentionRate'])
+            + (row['ProfessorSalary'] / 100)
+            + (200 * (row['Enrollment'] ** 0.5))
             )
-
     return score
 
 def isNaN(val):
