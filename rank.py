@@ -60,23 +60,36 @@ def createMatriculationRate(row):
 # Take SAT and ACT data for the percentile (either '25' or '75')
 # and create a 2400 SAT score by adding up all the SAT subjects
 # and by converting ACT scores to SAT scores, create SAT equivalent by
-# averageing the two scores weighting by the percent of students submitting each test
+# averaging the two scores weighting by the percent of students submitting each test
 def createSATEquiv(row, percentile): 
     act = 0
-    sat = row['SATReading' + percentile] + row['SATMath' + percentile]\
-          + row['SATWriting' + percentile]
+    sat = row['SATReading' + percentile] + row['SATMath' + percentile]
+    if isNaN(row['SATWriting' + percentile]):
+        sat = sat * 3/2
+    else:
+        sat += row['SATMath' + percentile]
+    
     divisor = 0
     if isNaN(sat):
         sat = 0
+        row['PercentSubmittingSAT'] = 0
     else:
         divisor = row['PercentSubmittingSAT']
+
     if not isNaN(row['ACT' + percentile]):
         act = ACTtoSAT(row['ACT' + percentile])
         divisor += row['PercentSubmittingACT']
+    else:
+        row['PercentSubmittingACT'] = 0
+
     if divisor == 0:
         divisor = 1
     avgSAT = (sat * row['PercentSubmittingSAT'] +
                 act * row['PercentSubmittingACT']) / divisor
+
+    if avgSAT == 0:
+        # if the school doesn't report data, assume it has a terrible average SAT
+        avgSAT = 1100
     return avgSAT
 
 def createScore(row):
