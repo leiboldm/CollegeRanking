@@ -1,7 +1,8 @@
 import pandas
+import code
 
 def main():
-    coll_df = pandas.read_csv("collegeData.csv")
+    coll_df = pandas.read_csv("collegeDataV2.csv")
     fillNulls(coll_df, "ProfessorSalary")
     fillNulls(coll_df, "PercentUndergradForeign")
     fillNulls(coll_df, "PercentUndergradOutOfState")
@@ -18,6 +19,8 @@ def main():
     for i, row in top_colleges[:25][['name', 'score']].iterrows():
         print "{} {} {:.2f}".format(str(rank).ljust(2), row['name'].ljust(50), row['score'])
         rank += 1
+    code.interact(local=locals())
+    
 
 def fillNulls(df, key, defaultValue=None):
     if defaultValue == None: 
@@ -25,7 +28,7 @@ def fillNulls(df, key, defaultValue=None):
     df[key].fillna(defaultValue, inplace=True)
 
 def createScore(row):
-    endowmentPerStudent = row['Endowment'] / row['Enrollment']
+    expensesPerStudent = row['TotalExpenses'] / row['Enrollment']
 
     # calculate admission rate
     if row['ApplicantsTotal'] > 0:
@@ -46,32 +49,38 @@ def createScore(row):
     # calculate 75% average SAT/SAT equivalent
     act75 = 0
     sat75 = row['SATReading75'] + row['SATMath75'] + row['SATWriting75']
-    dividend = 2
+    dividend = 0
     if isNaN(sat75):
         sat75 = 0
-        dividend = 1
+    else:
+        dividend = row['PercentSubmittingSAT']
     if not isNaN(row['ACT75']):
         act75 = ACTtoSAT(row['ACT75'])
-    else:
+        dividend += row['PercentSubmittingACT']
+    if dividend == 0:
         dividend = 1
-    avgSAT75 = (sat75 + act75) / dividend
+    avgSAT75 = (sat75 * row['PercentSubmittingSAT'] +
+                act75 * row['PercentSubmittingACT']) / dividend
 
     # calculate 25% average SAT/SAT equivalent
     act25 = 0
     sat25 = row['SATReading25'] + row['SATMath25'] + row['SATWriting25']
-    dividend = 2
+    dividend = 0
     if isNaN(sat25):
         sat25 = 0
-        dividend = 1
+    else:
+        dividend = row['PercentSubmittingSAT']
     if not isNaN(row['ACT25']):
         act25 = ACTtoSAT(row['ACT25'])
-    else:
+        dividend += row['PercentSubmittingACT']
+    if dividend == 0:
         dividend = 1
-    avgSAT25 = (sat25 + act25) / dividend
+    avgSAT25 = (sat25 * row['PercentSubmittingSAT'] + 
+                act25 * row['PercentSubmittingACT']) / dividend
 
     SAT = (avgSAT25 + avgSAT75) / 2
    
-    score = (row['Endowment'] / 200
+    score = (expensesPerStudent / 100
             + (100 / admissionRate)
             + (matriculationRate * 100)
             + (SAT * 1)
