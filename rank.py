@@ -19,6 +19,8 @@ def main():
     coll_df['score'] = coll_df.apply(lambda row: createScore(row), axis=1)
 
     top_colleges = coll_df.sort('score', ascending=False)
+    max_score = max(top_colleges['score'].tolist())
+    top_colleges['score'] = top_colleges.apply(lambda row: normalizeScore(row, max_score), axis=1)
     top_colleges['rank'] = range(1, top_colleges.shape[0] + 1)
 
     for i, row in top_colleges[:50][['rank', 'name', 'score']].iterrows():
@@ -34,6 +36,9 @@ def main():
                 'FulltimeUndergradEnrollment']
     with open("top_colleges.csv", "w") as f:
         top_colleges.to_csv(f, columns=columns, index=False, float_format="%.1f") 
+
+def normalizeScore(row, max_score):
+    return row['score'] * 100 / max_score
     
 def fillNulls(df, key, defaultValue=None):
     if defaultValue == None: 
