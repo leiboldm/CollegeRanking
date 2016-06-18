@@ -3,7 +3,7 @@
 //         table is an jquery table element the csv will be loaded into
 // REQUIRES: jquery
 function csv2table(csvurl, table, callback) {
-    var loader = $("<img src='circle-loading-animation.gif'>").appendTo(table);
+    var loader = $("<div>Loading data</div>").appendTo(table);
     $.ajax({
         url: csvurl,
         beforeSend: function(xhr) {
