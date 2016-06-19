@@ -36,7 +36,7 @@
         <link href="jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
         <script>
             /*  Resize the header to match the viewport height */
-            function resize() {
+            function resizeHeaderHeight() {
                 $("#header").css("height", window.innerHeight + "px");
             }
             $(window).resize(function(e) {
@@ -45,20 +45,33 @@
                     the window resizes substantially (ex: in the case of an 
                     orientation change) 
                 */
-                if (Math.abs($("#header").height() - window.innerHeight) > 100) {
-                    resize();
+                if (Math.abs($("#header").height() - window.innerHeight) > 200) {
+                    resizeHeaderHeight();
+                }
+                var BK_WIDTH = 4288;
+                var BK_HEIGHT = 2848;
+                var width_scale = $('header').height() / BK_WIDTH;
+                var new_height = 100 * BK_HEIGHT / $('header').height() * width_scale;
+                if (new_height >= 100) {
+                    $('#headerBackground').css("height", new_height.toString() + "%");
+                    $('#headerBackground').css("width", "100%");
+                    $('#headerBackground').css("left", "0%");
+                } else {
+                    var new_width = 10000 / new_height;
+                    $('#headerBackground').css("left", "-" + ((new_width - 100) / 2) + "%");
+                    $('#headerBackground').css("height", "100%");
+                    $('#headerBackground').css("width",  new_width.toString() + "%");
                 }
             });
             $(document).ready(function() {
-                resize();
-                csv2table("top_colleges.csv", $("#myTable"), function() {
-                    $("#myTable").DataTable({ "pageLength": 25 });
-                    $('#upper_scrollbar_inner').width($('#myTable').width());
-                });
+                resizeHeaderHeight();
                 var highResHeader = new Image();
                 highResHeader.onload = function() {
                     $('#headerBackground').attr("src",this.src);
-                    console.log("header loaded");
+                    csv2table("top_colleges.csv", $("#myTable"), function() {
+                        $("#myTable").DataTable({ "pageLength": 25 });
+                        $('#upper_scrollbar_inner').width($('#myTable').width());
+                    });
                 }
                 highResHeader.src = "images/UniversityOfMichiganLawLibrary.jpg";
             });
