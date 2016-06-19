@@ -28,15 +28,26 @@
                 <table id="myTable" class="display"></table>
             </div>
         </div>
-        <p style="padding-left: 10%; padding-right: 10%; ">This ranking is based on data from the <a href="http://nces.ed.gov/ipeds/datacenter/">National Center For Education Statistics</a>.  Missing data is replaced with the national average except for SAT scores, admission rate, and matriculation rate which are replaced with the national minimum (1100, 100%, and 0% respectively). The data for this ranking is from 2014.  The algorithm for producing this ranking can be found at <a href="http://github.com/leiboldm/CollegeRanking">github.com/leiboldm/CollegeRanking</a>.
-        </p>
+        <div class="after_info">This ranking is based on data from the <a href="http://nces.ed.gov/ipeds/datacenter/">National Center For Education Statistics</a>.  Missing data is replaced with the national average except for SAT scores, admission rate, and matriculation rate which are replaced with the national minimum (1100, 100%, and 0% respectively). The data for this ranking is from 2014.  The algorithm for producing this ranking can be found at <a href="http://github.com/leiboldm/CollegeRanking">github.com/leiboldm/CollegeRanking</a>.
+        </div>
         <footer style="text-align: center; color: #777">
              Copyright mattleibold.com June, 2016.
         </footer>
         <script>
+            /*  Resize the header to match the viewport height */
             function resize() {
                 $("#header").css("height", window.innerHeight + "px");
             }
+            $(window).resize(function(e) {
+                /*  Chrome for android has address bar that appears and disappers 
+                    causing the window to resize.  Only resize the header if
+                    the window resizes substantially (ex: in the case of an 
+                    orientation change) 
+                */
+                if (Math.abs($("#header").height() - window.innerHeight) > 100) {
+                    resize();
+                }
+            });
             $(document).ready(function() {
                 resize();
                 csv2table("top_colleges.csv", $("#myTable"), function() {

@@ -47,24 +47,24 @@ header img {
 }
 @media (orientation: landscape) and (max-width: 1000px) {
     header h1 {
-        font-size: 5vw;
+        font-size: 7vmin;
     }
     header h2 {
-        font-size: 3vw;
+        font-size: 3.5vmin;
     }
-    header h4 {
-        font-size: 2vw;
+    header h4, .after_info {
+        font-size: 2.5vmin;
     }
 }
 @media (orientation: landscape) and (min-width: 1000px) {
     header h1 {
-        font-size: 4vw;
+        font-size: 8vmin;
     }
     header h2 {
-        font-size: 2vw;
+        font-size: 4vmin;
     }
-    header h4 {
-        font-size: 1.5vw;
+    header h4, .after_info {
+        font-size: 3vmin;
     }
 }
 @media (orientation: portrait) {
@@ -80,7 +80,12 @@ header img {
     header h2 {
         font-size: 4vw;
     }
-    header h4 {
+    header h4, .after_info {
         font-size: 3vw;
     }
+}
+.after_info {
+    margin-left: 10%;
+    margin-right: 10%;
+    max-height: 99999px; /* prevent font boosting */
 }
