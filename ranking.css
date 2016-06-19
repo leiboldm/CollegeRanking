@@ -52,7 +52,7 @@ header img {
     header h2 {
         font-size: 3.5vmin;
     }
-    header h4, .after_info {
+    header h4, .after_info, footer {
         font-size: 2.5vmin;
     }
 }
@@ -63,7 +63,7 @@ header img {
     header h2 {
         font-size: 4vmin;
     }
-    header h4, .after_info {
+    header h4, .after_info, footer {
         font-size: 3vmin;
     }
 }
@@ -80,7 +80,7 @@ header img {
     header h2 {
         font-size: 4vw;
     }
-    header h4, .after_info {
+    header h4, .after_info, footer {
         font-size: 3vw;
     }
 }
