@@ -1,0 +1,86 @@
+a {
+    color: black;
+}
+header {
+    text-align: center;
+    width: 100%;
+    height: 500px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    overflow-y: hidden;
+}
+header img {
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    position: absolute;
+}
+.headerTextContainer {
+    position: absolute;   
+    background: rgba(10, 10, 10, 0.5);
+    color: white;
+}
+@media (min-width: 1000px) {
+    .headerTextContainer {
+        top: 10%;
+        height: 80%;
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+}
+@media (min-width: 800px) and (max-width: 1000px) {
+    .headerTextContainer {
+        top: 10%;
+        height: 80%;
+        margin-left: 20%;
+        margin-right: 20%;
+    }
+}
+@media (max-width: 800px) {
+    .headerTextContainer {
+        top: 10%;
+        height: 80%;
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+}
+@media (orientation: landscape) and (max-width: 1000px) {
+    header h1 {
+        font-size: 5vw;
+    }
+    header h2 {
+        font-size: 3vw;
+    }
+    header h4 {
+        font-size: 2vw;
+    }
+}
+@media (orientation: landscape) and (min-width: 1000px) {
+    header h1 {
+        font-size: 4vw;
+    }
+    header h2 {
+        font-size: 2vw;
+    }
+    header h4 {
+        font-size: 1.5vw;
+    }
+}
+@media (orientation: portrait) {
+    .headerTextContainer {
+        top: 15%;
+        height: 70%;
+        margin-left: 5%;
+        margin-right: 5%;
+    }
+    header h1 {
+        font-size: 6vw;
+    }
+    header h2 {
+        font-size: 4vw;
+    }
+    header h4 {
+        font-size: 3vw;
+    }
+}

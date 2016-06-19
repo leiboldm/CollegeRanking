@@ -5,23 +5,24 @@
         <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="csv2table.js"></script>
         <link href="jquery.dataTables.min.css" rel="stylesheet" type="text/css"/>
-        <style>
-        a {
-            color: black;
-        }
-        </style>
+        <link href="ranking.css" rel="stylesheet" type="text/css"/>
     </head>
     <body style="padding: 0; margin: 0">
-        <header style="text-align: center; background-color: #ccf; padding: 10px">
-            <h1>MattLeibold.com National University Ranking</h1>
-            <div id="description" style="text-align:center; padding-left: 20%; padding-right: 20%;">
-                <h4>A comprehensive ranking of all 4 year, degree-granting universities in the US. This ranking considers many important factors including cost of attendance, difficulty of admission, quality of instruction, student body demographics, and student success to create the most comprehensive of ranking of the best universities in the country.  
-                </h4>
+        <header id="header">
+            <img id="headerBackground" src="UniversityofMichiganLawLibrary.jpg"/>
+            <div class="headerTextContainer">
+                <h1>MattLeibold.com National University Ranking</h1>
+                <div id="description" style="text-align:center; padding-left: 20%; padding-right: 20%;">
+                    <h2>A comprehensive ranking of all 4 year, degree-granting universities in the US.
+                    </h2>
+                    <h4>This ranking considers many important factors including cost of attendance, difficulty of admission, quality of instruction, student body demographics, and student success to create the most comprehensive of ranking of the best universities in the country.
+                    </h4>
+                </div>
             </div>
         </header>
         <div style="padding: 5px">
             <div id="upper_scrollbar" style="overflow-x: scroll; width: 100%;">
-                <div id="upper_scrollbar_inner" style="height: 20px;"></div>
+                <div id="upper_scrollbar_inner" style="height: 1px;"></div>
             </div>
             <div id="table_holder" style="width: 100%; overflow-x: scroll">
                 <table id="myTable" class="display"></table>
@@ -33,7 +34,11 @@
              Copyright mattleibold.com June, 2016.
         </footer>
         <script>
+            function resize() {
+                $("#header").css("height", window.innerHeight + "px");
+            }
             $(document).ready(function() {
+                resize();
                 csv2table("top_colleges.csv", $("#myTable"), function() {
                     $("#myTable").DataTable({ "pageLength": 25 });
                     $('#upper_scrollbar_inner').width($('#myTable').width());
@@ -41,10 +46,10 @@
             });
             $('#upper_scrollbar').scroll(function() {
                 $('#table_holder').scrollLeft($('#upper_scrollbar').scrollLeft());
-            })
+            });
             $('#table_holder').scroll(function() {
                 $('upper_scrollbar').scrollLeft($('#table_holder').scrollLeft());
-            })
+            });
         </script>
     </body>
 </html>
