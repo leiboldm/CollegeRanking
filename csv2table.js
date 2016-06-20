@@ -3,7 +3,6 @@
 //         table is an jquery table element the csv will be loaded into
 // REQUIRES: jquery
 function csv2table(csvurl, table, callback) {
-    var loader = $("<div>Loading data</div>").appendTo(table);
     $.ajax({
         url: csvurl,
         beforeSend: function(xhr) {
@@ -27,7 +26,7 @@ function csv2table(csvurl, table, callback) {
             for (var j = 0; j < cols.length; j++) {
                 tableHtml += ("<td>" + cols[j].split('"').join("") + "</td>");
             }
-            tableHtml += "</tr>"
+            tableHtml += "</tr>";
             tableBody.append(tableHtml);
         }
         tableBody.append(tableHtml);
@@ -35,7 +34,6 @@ function csv2table(csvurl, table, callback) {
         console.log(status);
         table.html("Failed to load data");
     }).always(function() {
-        loader.remove();
         callback();
     });
 }

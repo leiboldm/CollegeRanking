@@ -6,7 +6,7 @@
     <body style="padding: 0; margin: 0">
         <header id="header">
             <img id="headerBackground" src="images/UniversityofMichiganLawLibrarySmall.jpg"
-            alt="University of Michigan Law Library"/>
+            alt="University of Michigan Law Library" onload="loadData()"/>
             <div class="headerTextContainer">
                 <h1>MattLeibold.com National University Ranking</h1>
                 <div id="description" style="text-align:center; padding-left: 20%; padding-right: 20%;">
@@ -22,7 +22,9 @@
                 <div id="upper_scrollbar_inner" style="height: 1px;"></div>
             </div>
             <div id="table_holder" style="width: 100%; overflow-x: scroll">
-                <table id="myTable" class="display"></table>
+                <table id="myTable" class="display" style="width: 100%">
+                    <div id="loader" style="width: 100%; text-align: center; font-size: 4vmin">Loading data</div>
+                </table>
             </div>
         </div>
         <div class="after_info">This ranking is based on data from the <a href="http://nces.ed.gov/ipeds/datacenter/">National Center For Education Statistics</a>.  Missing data is replaced with the national average except for SAT scores, admission rate, and matriculation rate which are replaced with the national minimum (1100, 100%, and 0% respectively). The data for this ranking is from 2014.  The algorithm for producing this ranking can be found at <a href="http://github.com/leiboldm/CollegeRanking">github.com/leiboldm/CollegeRanking</a>.
@@ -63,15 +65,18 @@
                     $('#headerBackground').css("width",  new_width.toString() + "%");
                 }
             });
+            function loadData() {
+                csv2table("top_colleges.csv", $("#myTable"), function() {
+                    $('#loader').remove();
+                    $("#myTable").DataTable({ "pageLength": 25 });
+                    $('#upper_scrollbar_inner').width($('#myTable').width());
+                });
+            }
             $(document).ready(function() {
                 resizeHeaderHeight();
                 var highResHeader = new Image();
                 highResHeader.onload = function() {
                     $('#headerBackground').attr("src",this.src);
-                    csv2table("top_colleges.csv", $("#myTable"), function() {
-                        $("#myTable").DataTable({ "pageLength": 25 });
-                        $('#upper_scrollbar_inner').width($('#myTable').width());
-                    });
                 }
                 highResHeader.src = "images/UniversityOfMichiganLawLibrary.jpg";
             });
