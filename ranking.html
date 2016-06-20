@@ -1,12 +1,13 @@
 <html>
     <head>
         <title>National University Ranking</title>
+	<base href="/CollegeRanking/">
         <link href="ranking.css" rel="stylesheet" type="text/css"/>
     </head>
     <body style="padding: 0; margin: 0">
         <header id="header">
             <img id="headerBackground" src="images/UniversityofMichiganLawLibrarySmall.jpg"
-            alt="University of Michigan Law Library" onload="loadData()"/>
+            alt="University of Michigan Law Library" />
             <div class="headerTextContainer">
                 <h1>MattLeibold.com National University Ranking</h1>
                 <div id="description" style="text-align:center; padding-left: 20%; padding-right: 20%;">
@@ -73,12 +74,13 @@
                 });
             }
             $(document).ready(function() {
+		loadData();
                 resizeHeaderHeight();
                 var highResHeader = new Image();
                 highResHeader.onload = function() {
                     $('#headerBackground').attr("src",this.src);
                 }
-                highResHeader.src = "images/UniversityOfMichiganLawLibrary.jpg";
+                highResHeader.src = "images/UniversityofMichiganLawLibrary.jpg";
             });
             $('#upper_scrollbar').scroll(function() {
                 $('#table_holder').scrollLeft($('#upper_scrollbar').scrollLeft());
