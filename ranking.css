@@ -91,3 +91,8 @@ header img {
     margin-right: 10%;
     max-height: 99999px; /* prevent font boosting */
 }
+#loader {
+    width: 100%;
+    font-size: 3vw;
+    text-align: center;
+}

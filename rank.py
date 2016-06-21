@@ -71,7 +71,28 @@ def main():
     top_colleges = top_colleges[columns]
     top_colleges.columns = output_headers
     with open("top_colleges.csv", "w") as f:
-        top_colleges.to_csv(f, columns=output_headers, index=False, float_format="%.1f") 
+        top_colleges.to_csv(f, columns=output_headers, index=False, float_format="%.1f")
+
+    # take the top_colleges.csv file and convert it to an html
+    # table to be included via php
+    with open("top_colleges.csv", "r") as ifile:
+        lines = ifile.readlines()
+
+    with open("rankingTable.html", "w") as ofile:
+        ofile.write("<thead><tr>")
+        headers = lines[0].split(",")
+        print headers
+        for header in headers:
+            print header
+            ofile.write("<th>" + header + "</th>")
+        ofile.write("</tr></thead>")
+        for line_i in range(1, len(lines)):
+            cols = lines[line_i].split(",")
+            ofile.write("<tr>")
+            for col in cols:
+                ofile.write("<td>" + col.strip("\"") + "</td>")
+            ofile.write("</tr>")
+	
 
 def normalizeScore(row, max_score):
     return row['score'] * 100 / max_score
